@@ -1,12 +1,10 @@
 const Url = require("../models/Url");
 const Log = require("../middleware/logger");
 
-// Create Short URL (shortcode must be provided manually)
 exports.createShortUrl = async (req, res) => {
   try {
     const { url, validity = 30, shortcode } = req.body;
 
-    // ✅ Validate shortcode
     if (typeof shortcode !== "string" || shortcode.trim() === "") {
       await Log("backend", "error", "controller", "Shortcode is missing or invalid");
       return res.status(400).json({ error: "Shortcode is required and must be a non-empty string" });
@@ -35,13 +33,12 @@ exports.createShortUrl = async (req, res) => {
       expiry: expiryDate.toISOString(),
     });
   } catch (err) {
-    console.log("🔥 ERROR:", err);
+    console.log("ERROR:", err);
     await Log("backend", "fatal", "controller", `Error creating short URL: ${err.message}`);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// Get stats for a short URL
 exports.getStats = async (req, res) => {
   try {
     const { shortcode } = req.params;
@@ -64,8 +61,6 @@ exports.getStats = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-
-// Redirect to original URL
 exports.redirect = async (req, res) => {
   try {
     const { shortcode } = req.params;
